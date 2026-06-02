@@ -251,6 +251,7 @@ PRODUCT_PACKAGES += \
     WifiResTarget \
     PicassoFrameworks \
     PicassoParts \
+    PicassoSettings \
     PicassoSettingsProvider \
     PicassoSnap \
     PicassoSystemUI
