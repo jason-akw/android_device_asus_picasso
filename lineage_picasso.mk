@@ -14,6 +14,11 @@ $(call inherit-product, device/asus/picasso/device.mk)
 # Inherit from the Lineage configuration.
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
+# Call MindTheGapps configs.
+$(call inherit-product, vendor/gapps/arm64/arm64-vendor.mk)
+
+WITH_GAPPS := true
+
 PRODUCT_BRAND := asus
 PRODUCT_DEVICE := picasso
 PRODUCT_MANUFACTURER := asus
