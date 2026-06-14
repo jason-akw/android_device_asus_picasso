@@ -172,6 +172,9 @@ PRODUCT_PACKAGES += \
     vendor.qti.hardware.display.composer-service \
     vendor.qti.hardware.display.mapper@4.0.vendor
 
+PRODUCT_COPY_FILES += \
+    vendor/asus/picasso/proprietary/vendor/firmware/iris6_ccf1.fw:$(TARGET_COPY_OUT_VENDOR)/firmware/iris6_ccf1b.fw
+
 # Fastboot
 PRODUCT_PACKAGES += \
     fastbootd
