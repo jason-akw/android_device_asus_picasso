@@ -21,36 +21,6 @@
          non-zero. -->
     <integer name="config_defaultPeakRefreshRate">144</integer>
 
-    <!-- picasso does not expose a display white-balance color temperature sensor.
-         SystemServer still constructs DisplayWhiteBalanceController during display
-         init, so keep these optional lookup tables valid and neutral. -->
-    <bool name="config_displayWhiteBalanceAvailable">false</bool>
-    <string name="config_displayWhiteBalanceColorTemperatureSensorName" translatable="false">android.sensor.light</string>
-    <array name="config_displayWhiteBalanceHighLightAmbientBrightnesses">
-        <item>10000.0</item>
-        <item>10001.0</item>
-    </array>
-    <array name="config_displayWhiteBalanceHighLightAmbientBiases">
-        <item>0.0</item>
-        <item>1.0</item>
-    </array>
-    <array name="config_displayWhiteBalanceAmbientColorTemperatures">
-        <item>6500.0</item>
-        <item>6501.0</item>
-    </array>
-    <array name="config_displayWhiteBalanceDisplayColorTemperatures">
-        <item>6500.0</item>
-        <item>6501.0</item>
-    </array>
-    <array name="config_displayWhiteBalanceStrongAmbientColorTemperatures">
-        <item>6500.0</item>
-        <item>6501.0</item>
-    </array>
-    <array name="config_displayWhiteBalanceStrongDisplayColorTemperatures">
-        <item>6500.0</item>
-        <item>6501.0</item>
-    </array>
-
     <!-- Note: This setting is deprecated, please use
     config_screenBrightnessSettingMinimumFloat instead -->
     <integer name="config_screenBrightnessSettingMinimum">1</integer>
