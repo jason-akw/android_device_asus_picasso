@@ -277,7 +277,6 @@ PRODUCT_PACKAGES += \
     android.hardware.neuralnetworks@1.3.vendor
 
 # Overlays
-DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay-lineage
 PRODUCT_ENFORCE_RRO_TARGETS := *
 
 PRODUCT_PACKAGES += \
@@ -289,6 +288,8 @@ PRODUCT_PACKAGES += \
     WifiResCommon \
     WifiResTarget \
     PicassoFrameworks \
+    PicassoLineageSDK \
+    PicassoLineageSystemUI \
     PicassoParts \
     PicassoSettings \
     PicassoSettingsProvider \
