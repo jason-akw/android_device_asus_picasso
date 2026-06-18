@@ -24,8 +24,7 @@ AB_OTA_POSTINSTALL_CONFIG += \
 
 PRODUCT_PACKAGES += \
     checkpoint_gc \
-    otapreopt_script \
-    vendor.qti.data.factory@2.0-manifest
+    otapreopt_script
 
 # APEX
 $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
