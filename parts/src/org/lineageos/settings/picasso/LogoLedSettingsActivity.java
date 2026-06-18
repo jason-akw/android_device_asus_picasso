@@ -25,7 +25,7 @@ public final class LogoLedSettingsActivity extends CollapsingToolbarBaseActivity
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(com.android.settingslib.widget.R.id.content_frame,
+                    .replace(com.android.settingslib.collapsingtoolbar.R.id.content_frame,
                             new LogoLedSettingsFragment(), TAG_LOGO_LED)
                     .commit();
         }
