@@ -241,11 +241,11 @@
     </array>
     <array name="config_displayWhiteBalanceHighLightAmbientBiases">
         <item>0.0</item>
-        <item>0.0</item>
+        <item>1.0</item>
     </array>
     <array name="config_displayWhiteBalanceHighLightAmbientBiasesStrong">
         <item>0.0</item>
-        <item>0.0</item>
+        <item>1.0</item>
     </array>
     <array name="config_displayWhiteBalanceAmbientColorTemperatures">
         <item>6500.0</item>
