@@ -3,9 +3,6 @@
 ## (18.1055.2307.269-0). OTAs to extract from can be found here:
 ## https://www.asus.com/Mobile/Phones/ASUS/Smartphone-for-Snapdragon-Insiders/HelpDesk_BIOS/
 ##
-## qweslicstore.img is not present in the stock OTA payload, so it is pinned
-## from the same-version GeekFlashTool readback dump.
-
 # Firmware
 abl.img;AB
 aop.img;AB
@@ -19,7 +16,6 @@ keymaster.img;AB
 modem.img;AB
 multiimgoem.img;AB
 qupfw.img;AB
-qweslicstore.img|180cf2903b9872499d05eeef08c472575fa3225e;AB
 shrm.img;AB
 tz.img;AB
 uefisecapp.img;AB
