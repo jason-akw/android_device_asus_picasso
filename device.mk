@@ -209,6 +209,9 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/privapp-permissions-product.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/privapp-permissions-asus-product.xml
 
 # Initialization
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/init/init.picasso.logging.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.picasso.logging.rc
+
 PRODUCT_PACKAGES += \
     fstab.battery \
     fstab.default \

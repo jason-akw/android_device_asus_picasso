@@ -1,0 +1,12 @@
+service save_early_logcat /system/bin/logcat -b all -f /metadata/picasso-logs/logcat.log
+    class core
+    user root
+    group root log
+    disabled
+
+on late-init
+    mkdir /metadata/picasso-logs 0770 root log
+    start save_early_logcat
+
+on property:sys.boot_completed=1
+    stop save_early_logcat
