@@ -12,6 +12,28 @@
     <string name="logo_led_keep_on_screen_off_title">螢幕關閉時保持亮起</string>
     <string name="logo_led_speed_title">呼吸速度</string>
 
+    <string name="nr_mode_title">5G SA／NSA 模式</string>
+    <string name="nr_mode_summary">選擇 Qualcomm 數據機的 5G 運作模式</string>
+    <string name="nr_mode_category">SIM 卡</string>
+    <string name="nr_mode_connecting">正在連線至 Qualcomm 電信服務…</string>
+    <string name="nr_mode_no_sim">沒有使用中的 SIM 卡</string>
+    <string name="nr_mode_service_unavailable">Qualcomm 電信服務未就緒</string>
+    <string name="nr_mode_registration_failed">向 Qualcomm 電信服務註冊失敗</string>
+    <string name="nr_mode_sim_title">SIM %1$d · %2$s</string>
+    <string name="nr_mode_sim_title_no_name">SIM %1$d</string>
+    <string name="nr_mode_dialog_title">選擇 5G 模式</string>
+    <string name="nr_mode_querying">正在讀取數據機設定…</string>
+    <string name="nr_mode_applying">正在套用…</string>
+    <string name="nr_mode_request_failed">數據機請求失敗</string>
+    <string name="nr_mode_unknown">不明的模式（%1$d）</string>
+    <string name="nr_mode_changed">已更新 SIM %1$d 的 5G 模式</string>
+
+    <string-array name="nr_mode_entries">
+        <item>SA + NSA（建議）</item>
+        <item>僅 NSA</item>
+        <item>僅 SA（需電信商支援 SA）</item>
+    </string-array>
+
     <string-array name="logo_led_mode_entries">
         <item>恆亮</item>
         <item>呼吸</item>

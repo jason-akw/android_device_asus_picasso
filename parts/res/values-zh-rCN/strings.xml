@@ -12,6 +12,28 @@
     <string name="logo_led_keep_on_screen_off_title">屏幕关闭时保持亮起</string>
     <string name="logo_led_speed_title">呼吸速度</string>
 
+    <string name="nr_mode_title">5G SA/NSA 模式</string>
+    <string name="nr_mode_summary">选择 Qualcomm 调制解调器的 5G 工作模式</string>
+    <string name="nr_mode_category">SIM 卡</string>
+    <string name="nr_mode_connecting">正在连接 Qualcomm 电信服务…</string>
+    <string name="nr_mode_no_sim">没有活动的 SIM 卡</string>
+    <string name="nr_mode_service_unavailable">Qualcomm 电信服务未就绪</string>
+    <string name="nr_mode_registration_failed">向 Qualcomm 电信服务注册失败</string>
+    <string name="nr_mode_sim_title">SIM %1$d · %2$s</string>
+    <string name="nr_mode_sim_title_no_name">SIM %1$d</string>
+    <string name="nr_mode_dialog_title">选择 5G 模式</string>
+    <string name="nr_mode_querying">正在读取调制解调器设置…</string>
+    <string name="nr_mode_applying">正在应用…</string>
+    <string name="nr_mode_request_failed">调制解调器请求失败</string>
+    <string name="nr_mode_unknown">未知模式（%1$d）</string>
+    <string name="nr_mode_changed">已更新 SIM %1$d 的 5G 模式</string>
+
+    <string-array name="nr_mode_entries">
+        <item>SA + NSA（推荐）</item>
+        <item>仅 NSA</item>
+        <item>仅 SA（需运营商支持 SA）</item>
+    </string-array>
+
     <string-array name="logo_led_mode_entries">
         <item>常亮</item>
         <item>呼吸</item>

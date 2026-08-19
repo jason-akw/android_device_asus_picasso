@@ -13,6 +13,10 @@ android_app {
     privileged: true,
     system_ext_specific: true,
 
+    libs: [
+        "extphonelib",
+    ],
+
     static_libs: [
         "androidx.palette_palette",
         "SettingsLibCollapsingToolbarBaseActivity",

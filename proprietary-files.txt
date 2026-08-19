@@ -1292,6 +1292,8 @@ vendor/lib64/libsoc_helper_jni.so
 vendor/lib64/libsoc_helper.so
 
 # QCRIL
+# From ASUS Zenfone 8 (sake): provides the qtiradio@2.5 ExtPhone bridge.
+system_ext/app/QtiTelephony/QtiTelephony.apk
 system_ext/app/QtiTelephonyService/QtiTelephonyService.apk
 system_ext/etc/permissions/qcrilhook.xml
 system_ext/etc/permissions/qti_libpermissions.xml

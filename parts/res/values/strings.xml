@@ -12,6 +12,33 @@
     <string name="logo_led_keep_on_screen_off_title">Keep on when screen is off</string>
     <string name="logo_led_speed_title">Breathing speed</string>
 
+    <string name="nr_mode_title">5G SA/NSA mode</string>
+    <string name="nr_mode_summary">Choose the Qualcomm modem\'s 5G operating mode</string>
+    <string name="nr_mode_category">SIM cards</string>
+    <string name="nr_mode_connecting">Connecting to Qualcomm telephony service…</string>
+    <string name="nr_mode_no_sim">No active SIM card</string>
+    <string name="nr_mode_service_unavailable">Qualcomm telephony service is unavailable</string>
+    <string name="nr_mode_registration_failed">Could not register with Qualcomm telephony service</string>
+    <string name="nr_mode_sim_title">SIM %1$d · %2$s</string>
+    <string name="nr_mode_sim_title_no_name">SIM %1$d</string>
+    <string name="nr_mode_dialog_title">Select 5G mode</string>
+    <string name="nr_mode_querying">Reading current modem setting…</string>
+    <string name="nr_mode_applying">Applying…</string>
+    <string name="nr_mode_request_failed">Modem request failed</string>
+    <string name="nr_mode_unknown">Unknown mode (%1$d)</string>
+    <string name="nr_mode_changed">5G mode updated for SIM %1$d</string>
+
+    <string-array name="nr_mode_entries">
+        <item>SA + NSA (recommended)</item>
+        <item>NSA only</item>
+        <item>SA only (requires carrier SA)</item>
+    </string-array>
+    <string-array name="nr_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <string-array name="logo_led_mode_entries">
         <item>Steady</item>
         <item>Breathing</item>
