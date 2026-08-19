@@ -121,6 +121,10 @@ persist.vendor.radio.data_ltd_sys_ind=1
 persist.vendor.radio.procedure_bytes=SKIP
 persist.vendor.radio.rat_on=none
 
+# SSR
+persist.vendor.ssr.restart_level=ALL_ENABLE
+persist.vendor.ssr.enable_ramdumps=1
+
 # Sensors
 persist.vendor.sensors.allow_non_default_discovery=true
 persist.vendor.sensors.on_change_sample_period=true
