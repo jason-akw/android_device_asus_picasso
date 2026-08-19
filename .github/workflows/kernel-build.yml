@@ -1,0 +1,146 @@
+name: Build Picasso kernel
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/wpa3-5g-sa
+    paths:
+      - .github/workflows/kernel-build.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: picasso-kernel-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+
+    steps:
+      - name: Reclaim runner disk space
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            bc \
+            bison \
+            build-essential \
+            cpio \
+            device-tree-compiler \
+            flex \
+            libelf-dev \
+            libssl-dev \
+            python3 \
+            rsync \
+            zstd
+
+      - name: Check out patched kernel
+        uses: actions/checkout@v4
+        with:
+          repository: jason-akw/android_kernel_asus_sm8350
+          ref: fix/wpa3-5g-sa
+          path: kernel
+          fetch-depth: 1
+
+      - name: Check out Android clang r522817
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone \
+            --branch android15-release \
+            --depth 1 \
+            --filter=blob:none \
+            --sparse \
+            https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 \
+            aosp-clang
+          git -C aosp-clang sparse-checkout set clang-r522817
+          aosp-clang/clang-r522817/bin/clang --version
+
+      - name: Build Image, device trees, and modules
+        shell: bash
+        run: |
+          set -euxo pipefail
+          export PATH="${GITHUB_WORKSPACE}/aosp-clang/clang-r522817/bin:${PATH}"
+          common_args=(
+            -C kernel
+            O="${GITHUB_WORKSPACE}/out"
+            ARCH=arm64
+            LLVM=1
+            LLVM_IAS=1
+            CROSS_COMPILE=aarch64-linux-gnu-
+            CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+            ASUS_BUILD_PROJECT=PICASSO
+            TARGET_BUILD_VARIANT=userdebug
+          )
+
+          make "${common_args[@]}" vendor/picasso_defconfig
+          make -j"$(nproc)" "${common_args[@]}" Image dtbs modules \
+            2>&1 | tee kernel-build.log
+
+      - name: Verify compiled USB3 device tree
+        shell: bash
+        run: |
+          set -euxo pipefail
+          dtbo="$(find out/arch/arm64/boot/dts/vendor/qcom \
+            -type f -iname 'PICASSO-MP-overlay.dtbo' -print -quit)"
+          test -n "${dtbo}"
+          dtc -I dtb -O dts "${dtbo}" > picasso-mp-compiled.dts
+          if grep -q 'ssusb_redriver' picasso-mp-compiled.dts; then
+            echo "Stale ssusb_redriver phandle is still present" >&2
+            exit 1
+          fi
+          grep -q 'super-speed-plus' picasso-mp-compiled.dts
+
+      - name: Collect kernel artifacts
+        if: success()
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p artifacts/device-trees
+          cp out/arch/arm64/boot/Image artifacts/
+          find out/arch/arm64/boot/dts/vendor/qcom -maxdepth 1 \
+            -type f \( -iname 'PICASSO*.dtb' -o -iname 'PICASSO*.dtbo' \) \
+            -exec cp -t artifacts/device-trees {} +
+          find out -type f -name '*.ko' -print0 \
+            | tar --null -T - --zstd -cf artifacts/modules.tar.zst
+          cp out/.config artifacts/kernel.config
+          cp kernel-build.log picasso-mp-compiled.dts artifacts/
+          (
+            cd artifacts
+            sha256sum Image modules.tar.zst device-trees/* > SHA256SUMS
+          )
+
+      - name: Upload kernel artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: picasso-kernel-${{ github.run_number }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: picasso-kernel-failure-${{ github.run_number }}
+          path: |
+            kernel-build.log
+            out/.config
+          if-no-files-found: ignore
+          retention-days: 7

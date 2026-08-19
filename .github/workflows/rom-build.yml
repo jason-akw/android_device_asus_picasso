@@ -1,0 +1,191 @@
+name: Build LineageOS 22.2 for Picasso
+
+on:
+  workflow_dispatch:
+    inputs:
+      clean_build:
+        description: Run installclean before building
+        required: true
+        type: boolean
+        default: false
+      sync_jobs:
+        description: Parallel repo sync jobs
+        required: true
+        type: string
+        default: "8"
+      build_jobs:
+        description: Parallel build jobs; 0 uses all CPUs
+        required: true
+        type: string
+        default: "0"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: picasso-lineage-22-2
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+      - android-rom
+    timeout-minutes: 360
+
+    steps:
+      - name: Check runner capacity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          build_root="${RUNNER_WORKSPACE}/lineage-22.2-picasso"
+          available_kb="$(df --output=avail "${RUNNER_WORKSPACE}" | tail -1)"
+          if [[ -d "${build_root}/.repo" ]]; then
+            required_kb=$((120 * 1024 * 1024))
+          else
+            required_kb=$((300 * 1024 * 1024))
+          fi
+          if (( available_kb < required_kb )); then
+            echo "Runner needs at least $((required_kb / 1024 / 1024)) GiB free" >&2
+            exit 1
+          fi
+          df -h "${RUNNER_WORKSPACE}"
+
+      - name: Install host dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            bc bison build-essential ccache curl flex g++-multilib gcc-multilib \
+            git git-lfs gnupg gperf imagemagick lib32ncurses-dev lib32readline-dev \
+            lib32z1-dev libelf-dev liblz4-tool libncurses5-dev libsdl1.2-dev \
+            libssl-dev libxml2 libxml2-utils lzop pngcrush python3 rsync \
+            schedtool squashfs-tools xsltproc zip zlib1g-dev
+          git lfs install
+          install -d "${HOME}/bin"
+          curl -fsSL https://storage.googleapis.com/git-repo-downloads/repo \
+            -o "${HOME}/bin/repo"
+          chmod 0755 "${HOME}/bin/repo"
+          echo "${HOME}/bin" >> "${GITHUB_PATH}"
+
+      - name: Initialize LineageOS source
+        shell: bash
+        run: |
+          set -euxo pipefail
+          export PATH="${HOME}/bin:${PATH}"
+          build_root="${RUNNER_WORKSPACE}/lineage-22.2-picasso"
+          mkdir -p "${build_root}"
+          cd "${build_root}"
+          repo init \
+            -u https://github.com/LineageOS/android.git \
+            -b lineage-22.2 \
+            --depth=1 \
+            --git-lfs
+          mkdir -p .repo/local_manifests
+          cat > .repo/local_manifests/picasso.xml <<'MANIFEST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <manifest>
+            <remote name="github" fetch="https://github.com/" />
+            <remote name="gitlab" fetch="https://gitlab.com/" />
+            <project
+                name="jason-akw/android_device_asus_picasso"
+                path="device/asus/picasso"
+                remote="github"
+                revision="fix/wpa3-5g-sa" />
+            <project
+                name="jason-akw/android_kernel_asus_sm8350"
+                path="kernel/asus/sm8350"
+                remote="github"
+                revision="fix/wpa3-5g-sa" />
+            <project
+                name="jason-akw/proprietary_vendor_asus_picasso"
+                path="vendor/asus/picasso"
+                remote="github"
+                revision="fix/wpa3-5g-sa" />
+            <project
+                name="MindTheGapps/vendor_gapps"
+                path="vendor/gapps"
+                remote="gitlab"
+                revision="vic"
+                clone-depth="1" />
+          </manifest>
+          MANIFEST
+
+      - name: Sync source
+        shell: bash
+        run: |
+          set -euxo pipefail
+          export PATH="${HOME}/bin:${PATH}"
+          cd "${RUNNER_WORKSPACE}/lineage-22.2-picasso"
+          repo sync \
+            -c \
+            --force-sync \
+            --no-clone-bundle \
+            --no-tags \
+            --optimized-fetch \
+            --prune \
+            -j"${{ inputs.sync_jobs }}"
+          repo manifest -r -o "${RUNNER_TEMP}/picasso-resolved-manifest.xml"
+          repo status
+          git -C device/asus/picasso rev-parse HEAD
+          git -C kernel/asus/sm8350 rev-parse HEAD
+          git -C vendor/asus/picasso rev-parse HEAD
+
+      - name: Build LineageOS
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd "${RUNNER_WORKSPACE}/lineage-22.2-picasso"
+          source build/envsetup.sh
+          lunch lineage_picasso-userdebug
+          if [[ "${{ inputs.clean_build }}" == "true" ]]; then
+            mka installclean
+          fi
+          jobs="${{ inputs.build_jobs }}"
+          if [[ "${jobs}" == "0" ]]; then
+            jobs="$(nproc)"
+          fi
+          mka bacon -j"${jobs}" 2>&1 | tee "${RUNNER_TEMP}/picasso-rom-build.log"
+
+      - name: Collect ROM artifacts
+        if: success()
+        shell: bash
+        run: |
+          set -euxo pipefail
+          product_dir="${RUNNER_WORKSPACE}/lineage-22.2-picasso/out/target/product/picasso"
+          artifact_dir="${RUNNER_TEMP}/picasso-rom-artifacts"
+          mkdir -p "${artifact_dir}"
+          find "${product_dir}" -maxdepth 1 -type f \
+            \( -name 'lineage-*.zip' \
+            -o -name 'boot.img' \
+            -o -name 'dtbo.img' \
+            -o -name 'recovery.img' \
+            -o -name 'vendor_boot.img' \) \
+            -exec cp -t "${artifact_dir}" {} +
+          cp "${RUNNER_TEMP}/picasso-resolved-manifest.xml" "${artifact_dir}/"
+          cp "${RUNNER_TEMP}/picasso-rom-build.log" "${artifact_dir}/"
+          (
+            cd "${artifact_dir}"
+            sha256sum * > SHA256SUMS
+          )
+
+      - name: Upload ROM artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lineage-22.2-picasso-${{ github.run_number }}
+          path: ${{ runner.temp }}/picasso-rom-artifacts/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload failure log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lineage-22.2-picasso-failure-${{ github.run_number }}
+          path: ${{ runner.temp }}/picasso-rom-build.log
+          if-no-files-found: ignore
+          retention-days: 7
