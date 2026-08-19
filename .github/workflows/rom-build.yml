@@ -174,7 +174,7 @@ jobs:
 
       - name: Upload ROM artifacts
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: lineage-22.2-picasso-${{ github.run_number }}
           path: ${{ runner.temp }}/picasso-rom-artifacts/
@@ -183,7 +183,7 @@ jobs:
 
       - name: Upload failure log
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: lineage-22.2-picasso-failure-${{ github.run_number }}
           path: ${{ runner.temp }}/picasso-rom-build.log
