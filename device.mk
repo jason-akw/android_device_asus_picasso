@@ -404,7 +404,19 @@ PRODUCT_PACKAGES += \
     vendor.lineage.touch@1.0-service.picasso
 
 # USB
-$(call inherit-product, vendor/qcom/opensource/usb/vendor_product.mk)
+PRODUCT_PACKAGES += \
+    android.hardware.usb-service.qti \
+    android.hardware.usb.gadget-service.qti \
+    init.qcom.usb.rc \
+    init.qcom.usb.sh \
+    picasso_usb_compositions.conf
+
+PRODUCT_PACKAGES_DEBUG += \
+    init.qti.usb.debug.rc \
+    init.qti.usb.debug.sh
+
+PRODUCT_SOONG_NAMESPACES += \
+    vendor/qcom/opensource/usb/etc
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.usb.accessory.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.usb.accessory.xml \
