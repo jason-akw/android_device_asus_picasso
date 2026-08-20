@@ -99,13 +99,18 @@ jobs:
           dtbo="$(find out/arch/arm64/boot/dts/vendor/qcom \
             -type f -iname 'PICASSO-MP-overlay.dtbo' -print -quit)"
           test -n "${dtbo}"
-          dtc -I dtb -O dts "${dtbo}" > picasso-mp-compiled.dts
+          dtc -I dtb -O dts "${dtbo}" \
+            > picasso-mp-compiled.dts \
+            2> picasso-mp-dtc-warnings.log
           grep -q 'super-speed-plus' picasso-mp-compiled.dts
 
           dwc3_obj="$(find out/drivers/usb/dwc3 \
             -type f -name 'dwc3-msm.o' -print -quit)"
-          test -n "${dwc3_obj}"
-          grep -a -q 'redriver orientation unavailable' "${dwc3_obj}"
+          test -s "${dwc3_obj}"
+          grep -Fq 'if (ret >= 0)' \
+            kernel/drivers/usb/dwc3/dwc3-msm.c
+          grep -Fq 'if (!orientation_set)' \
+            kernel/drivers/usb/dwc3/dwc3-msm.c
 
           if grep -q 'ssusb_redriver' picasso-mp-compiled.dts; then
             echo "Picasso overlay retains the EVB redriver phandle; " \
@@ -125,7 +130,8 @@ jobs:
           find out -type f -name '*.ko' -print0 \
             | tar --null -T - --zstd -cf artifacts/modules.tar.zst
           cp out/.config artifacts/kernel.config
-          cp kernel-build.log picasso-mp-compiled.dts artifacts/
+          cp kernel-build.log picasso-mp-compiled.dts \
+            picasso-mp-dtc-warnings.log artifacts/
           (
             cd artifacts
             sha256sum Image modules.tar.zst device-trees/* > SHA256SUMS
@@ -148,6 +154,7 @@ jobs:
           path: |
             kernel-build.log
             picasso-mp-compiled.dts
+            picasso-mp-dtc-warnings.log
             out/.config
           if-no-files-found: ignore
           retention-days: 7
